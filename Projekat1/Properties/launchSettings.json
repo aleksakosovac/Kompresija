@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Projekat1": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\Kompresija\\Projekat1\\test_fajl.txt"
+    }
+  }
+}
