@@ -1,0 +1,103 @@
+===========================================
+1. STA JE URADJENO
+===========================================
+
+Program racuna bajt-entropiju ulaznog fajla i implementira 4 algoritma za kompresiju:
+Shannon-Fano, Huffman, LZ77 i LZW. Za svaki od poslednja 4 algoritma implementirano je
+i kodiranje i dekodiranje, tako da se moze proveriti da dekodirani fajl odgovara
+originalu.
+
+===========================================
+2. STRUKTURA PROJEKTA (fajlovi)
+===========================================
+
+Program.cs          - glavni ulaz, prima komande i argumente
+Entropy.cs          - racunanje bajt-entropije (zadatak 1)
+BitIO.cs            - upis/citanje pojedinacnih bitova (8 bita = 1 bajt)
+CanonicalCode.cs     - generisanje koda iz duzina kodnih reci (koristi ga i SF i Huffman)
+DecodeTree.cs        - binarno stablo za dekodiranje SF/Huffman koda
+ShannonFano.cs       - Shannon-Fano algoritam
+Huffman.cs           - Huffman algoritam
+Codec.cs             - zajednicka logika kodiranja/dekodiranja fajla (format zaglavlja itd)
+ShannonFanoCodec.cs  - povezuje ShannonFano sa Codec-om
+HuffmanCodec.cs      - povezuje Huffman sa Codec-om
+LZ77.cs              - LZ77 algoritam
+LZW.cs               - LZW algoritam
+
+Struktura kodiranog fajla (SF/Huffman):
+8 bajtova - originalna velicina fajla (N)
+256 bajtova - duzina kodne reci za svaki moguci bajt (0 ako se ne pojavljuje)
+ostatak - kodirani podaci, spakovani bit po bit (8 bita/bajt)
+Duzine su dovoljne da se i enkoder i dekoder slazu oko koda (kanonicki kod), pa se
+sam kod ne mora cuvati eksplicitno - zaglavlje je zato malo (264 bajta), sto je
+zanemarljivo u odnosu na velicinu fajla.
+
+Struktura kodiranog fajla (LZ77):
+8 bajtova - N, zatim niz tokena (1 bit fleg + 8 bita literal, ili 1 bit fleg + 12 bita
+offset + 8 bita duzina)
+
+Struktura kodiranog fajla (LZW):
+8 bajtova - N, zatim niz kodova od po 12 bita (recnik do 4096 unosa)
+
+===========================================
+3. KAKO SE POKRECE
+===========================================
+
+Otvoriti Projekat1.sln u Visual Studiu, Build Solution (Ctrl+Shift+B). Ovo pravi
+Projekat1.exe u bin\Debug\net10.0 (ili slicno, zavisno od verzije .NET-a).
+
+Test fajl (test_fajl.txt, oko 5MB, tekstualni) nalazi se u korenu repozitorijuma.
+Najlakse je da se taj fajl (ili bilo koji drugi fajl velicine 1-10MB) prekopira u isti
+folder gde je i .exe, pa se onda komande pokrecu bez pune putanje - samo imenom fajla.
+
+Sve komande se pokrecu iz komandne linije (cmd), navigacijom do foldera sa .exe fajlom,
+i onda:
+
+Projekat1.exe <komanda> <argumenti>
+
+Komande:
+
+entropy <fajl>
+    - ispisuje velicinu fajla i bajt-entropiju
+    - primer: Projekat1.exe entropy test_fajl.txt
+
+sf-encode <ulaz> <izlaz>
+sf-decode <izlaz> <dekodirano>
+    - Shannon-Fano kodiranje/dekodiranje
+    - primer: Projekat1.exe sf-encode test_fajl.txt test_sf.bin
+              Projekat1.exe sf-decode test_sf.bin test_sf_decoded.txt
+
+huff-encode <ulaz> <izlaz>
+huff-decode <izlaz> <dekodirano>
+    - Huffman kodiranje/dekodiranje
+
+lz77-encode <ulaz> <izlaz>
+lz77-decode <izlaz> <dekodirano>
+    - LZ77 kodiranje/dekodiranje
+
+lzw-encode <ulaz> <izlaz>
+lzw-decode <izlaz> <dekodirano>
+    - LZW kodiranje/dekodiranje
+
+===========================================
+4. PROVERA ISPRAVNOSTI
+===========================================
+
+Posle kodiranja pa dekodiranja, original i dekodirani fajl bi trebalo da budu identicni.
+Provera (Windows):
+
+fc test_podaci.txt test_sf_decoded.txt
+fc test_podaci.txt test_huff_decoded.txt
+fc test_podaci.txt test_lz77_decoded.txt
+fc test_podaci.txt test_lzw_decoded.txt
+
+Ako pise "FC: no differences encountered", fajlovi su identicni.
+(na Linuxu/MacOS ekvivalentno: diff test_fajl.txt test_sf_decoded.txt)
+
+===========================================
+5. NAPOMENA
+===========================================
+
+Sve putanje u komandama su relativne (ime fajla) pod pretpostavkom da je test fajl
+u istom folderu kao i .exe. Ako se koristi neki drugi fajl, samo zameniti ime/putanju
+u komandama iznad - kod ne zavisi ni od kakve fiksne putanje.

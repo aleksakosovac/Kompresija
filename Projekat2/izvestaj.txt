@@ -1,0 +1,72 @@
+===========================================
+1. STA JE URADJENO
+===========================================
+
+1. Konstrukcija H matrice LDPC koda (Galager-ov postupak) za n=15, n-k=9, wr=5, wc=3
+2. Tabela sindroma i korektora, i odredjivanje kodnog rastojanja d_min
+3. Gallager B algoritam (iterativno hard-decision dekodiranje)
+4. Pretraga n-torke greske najmanje tezine koju Gallager B ne uspeva da ispravi,
+   poredjenje sa d_min
+
+Jezik: C#, .NET
+Seed za generator pseudoslucajnih brojeva = broj indeksa (49/2021 -> 492021, izbacena
+kosa crta).
+
+===========================================
+2. STRUKTURA PROJEKTA (fajlovi)
+===========================================
+
+Program.cs             - glavni ulaz, prima komande i argumente
+LdpcMatrixBuilder.cs   - konstrukcija H matrice (zadatak 1)
+MatrixIO.cs            - ispis/cuvanje matrice
+GF2.cs                 - racunanje sindroma (GF(2) operacije), brojanje jedinica
+Combinatorics.cs       - generisanje svih n-torki poredjanih po tezini
+SyndromeTable.cs       - tabela sindroma/korektora i d_min (zadatak 2)
+GallagerB.cs           - Gallager B algoritam (zadatak 3)
+WeaknessSearch.cs      - pretraga najslabije greske (zadatak 4)
+
+Napomena o konstrukciji H matrice: prva grupa vrsta je deterministicka (stepenasta
+struktura), a preostale 2 grupe se dobijaju pseudoslucajnom permutacijom kolona prve
+grupe. Ako permutacija proizvede dve identicne kolone u H, ceo pokusaj se odbacuje i
+generisu se nove permutacije (nastavljajuci isti seed-ovani generator) - u suprotnom
+kod moze ispasti sa trivijalnim kodnim rastojanjem 2.
+
+Napomena o Gallager B algoritmu: pravi se razlika izmedju poruke koju promenljiva salje
+ka odredjenom checku (racuna se na osnovu ostalih wc-1 suseda, ne racunajuci check kome
+se salje) i konacne odluke o bitu (racuna se na osnovu svih wc suseda). Prag odlucivanja
+zavisi od trenutne vrednosti bita - th0 ako je bit 0, th1 ako je bit 1.
+
+===========================================
+3. KAKO SE POKRECE
+===========================================
+
+Otvoriti Projekat2.sln u Visual Studiu, Build Solution (Ctrl+Shift+B). Ovo pravi
+Projekat2.exe u bin\Debug\net10.0 (ili slicno).
+
+Svi parametri su fiksni (n=15, n-k=9, wr=5, wc=3), a <seed> je broj indeksa.
+
+Komande (pokretati iz cmd-a, iz foldera gde je .exe):
+
+ldpc-build <n> <n-k> <wr> <wc> <seed> <izlazni_fajl>
+    - konstruise H matricu i cuva je u fajl (i ispisuje u konzoli)
+    - primer: Projekat2.exe ldpc-build 15 9 5 3 492021 H_matrica.txt
+
+ldpc-syndrome <n> <n-k> <wr> <wc> <seed> <izlazni_fajl>
+    - gradi tabelu sindroma/korektora (512 redova) i ispisuje kodno rastojanje d_min
+    - primer: Projekat2.exe ldpc-syndrome 15 9 5 3 492021 sindrom_tabela.txt
+
+ldpc-decode <n> <n-k> <wr> <wc> <seed> <th0> <th1> <maxIter> <primljeni_bitovi> <izlazni_fajl>
+    - dekodira zadati primljeni niz (n bita, npr "100000000000000") Gallager B algoritmom
+    - primer: Projekat2.exe ldpc-decode 15 9 5 3 492021 0.5 0.5 20 100000000000000 rezultat.txt
+
+ldpc-weakness <n> <n-k> <wr> <wc> <seed> <th0> <th1> <maxIter> <izlazni_fajl>
+    - trazi n-torku greske najmanje tezine koju Gallager B ne uspe da ispravi
+    - primer: Projekat2.exe ldpc-weakness 15 9 5 3 492021 0.5 0.5 20 najslabija_greska.txt
+
+===========================================
+4. NAPOMENA
+===========================================
+
+Broj indeksa 49/2021 je pretvoren u seed uklanjanjem kose crte: 492021.
+Sve komande koriste imena fajlova bez pune putanje - fajlovi se prave u folderu iz kog
+se .exe pokrece.
