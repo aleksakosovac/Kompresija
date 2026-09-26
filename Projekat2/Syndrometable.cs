@@ -41,6 +41,13 @@ namespace Projekat2
             for (int s = 0; s < syndromeCount; s++)
             {
                 string syndromeStr = ToBitString(s, m);
+
+                if (corrector[s] == -1)
+                {
+                    sb.AppendLine($"{syndromeStr} -> NEDOSTIZAN (H matrica nije punog ranga)");
+                    continue;
+                }
+
                 string correctorStr = ToBitString(corrector[s], n);
                 int weight = GF2.PopCount(corrector[s]);
                 sb.AppendLine($"{syndromeStr} -> {correctorStr}  [{weight}]");

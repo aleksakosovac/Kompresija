@@ -91,6 +91,8 @@ namespace Projekat2
                     int[,] H4 = LdpcMatrixBuilder.Build(n4, m4, wr4, wc4, seed4);
                     WeaknessSearch.Find(H4, n4, m4, th04, th14, maxIter4, outputPath4);
                     Console.WriteLine($"Rezultat sacuvan u: {outputPath4}");
+                    Console.WriteLine();
+                    Console.WriteLine(File.ReadAllText(outputPath4));
                     break;
 
                 default:

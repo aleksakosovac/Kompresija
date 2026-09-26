@@ -35,11 +35,12 @@
 
         public static int PopCount(int mask)
         {
+            uint u = unchecked((uint)mask);
             int count = 0;
-            while (mask != 0)
+            while (u != 0)
             {
-                count += mask & 1;
-                mask >>= 1;
+                count += (int)(u & 1);
+                u >>= 1;
             }
             return count;
         }

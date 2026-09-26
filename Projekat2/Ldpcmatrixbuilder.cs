@@ -24,6 +24,7 @@ namespace Projekat2
                 throw new ArgumentException("Parametri nisu konzistentni: (n-k)/wc mora biti jednako n/wr.");
             }
 
+            // Prva grupa vrsta (deterministicka) - ne menja se izmedju pokusaja
             int[,] firstGroup = new int[rowsPerGroup, n];
             for (int i = 0; i < rowsPerGroup; i++)
             {
@@ -102,7 +103,9 @@ namespace Projekat2
             for (int i = n - 1; i > 0; i--)
             {
                 int j = rnd.Next(i + 1);
-                (perm[i], perm[j]) = (perm[j], perm[i]);
+                int temp = perm[i];
+                perm[i] = perm[j];
+                perm[j] = temp;
             }
 
             return perm;
